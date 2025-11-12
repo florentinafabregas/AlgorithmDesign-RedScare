@@ -19,7 +19,7 @@ class Graph:
         if u not in self.vertices or v not in self.vertices:
             raise ValueError(f"Edge references unknown vertex: {u} -> {v}")
         self.adj.setdefault(u, []).append(v)
-        if not self.directed:
+        if not self.directed and u != v:
             self.adj.setdefault(v, []).append(u)
 
     def neighbors(self, u: str) -> List[str]:
@@ -44,9 +44,12 @@ class Graph:
             if counted != self.m:
                 raise ValueError(f"M mismatch: header {self.m}, parsed {counted} directed edges.")
         else:
-            counted_twice = sum(len(vs) for vs in self.adj.values())
-            if counted_twice != 2 * self.m:
-                raise ValueError(f"M mismatch: header {self.m}, parsed {counted_twice//2} undirected edges.")
+            # Count self-loops and normal edges separately
+            self_loops = sum(1 for u in self.adj if u in self.adj.get(u, []))
+            normal_edges_counted = sum(len(vs) for vs in self.adj.values()) - self_loops
+            total_edges = self_loops + (normal_edges_counted // 2)
+            if total_edges != self.m:
+                raise ValueError(f"M mismatch: header {self.m}, parsed {total_edges} undirected edges.")
 
     def __repr__(self) -> str:
         kind = "Directed" if self.directed else "Undirected"
@@ -216,7 +219,13 @@ class GraphParser:
                 g.add_edge(u, v)
         else:
             for e in und_edges:
-                u, v = tuple(e)
+                u_v = tuple(e)
+                if len(u_v) == 1:
+                    # Self-loop: frozenset({u}) has length 1
+                    u = v = u_v[0]
+                else:
+                    # Normal edge: frozenset({u, v}) has length 2
+                    u, v = u_v
                 g.add_edge(u, v)
 
         # sanity checks
@@ -231,123 +240,44 @@ class GraphParser:
             return cls.from_string(f.read())
 
 
-# --- tiny demo ---
+# # --- tiny demo ---
+# if __name__ == "__main__":
+#     sample = """\
+# 3 2 1
+# A B
+# A
+# B
+# C *
+# A -- B
+# B -- B
+# """
+#     g = GraphParser.from_string(sample)
+#     print(g)
+#     print("Directed:", g.directed)
+#     print("s,t:", g.s, g.t)
+#     print("Red:", sorted(g.red))
+#     print("Neighbors of B:", g.neighbors("B"))
+
+# EXAMPLE USAGE - RUN FROM THIS DIRECTORY FOR PATH TO WORK:
+import glob
+from pathlib import Path
+
 if __name__ == "__main__":
-    sample = """\
-100 8 47
-start ender
-ovule
-ender *
-topos *
-merit
-metes
-cease
-ethic *
-smite
-yummy *
-bonks *
-brook
-waled *
-libra *
-blaze
-tamer
-verso *
-wooed
-hadst *
-liras *
-moods
-amply *
-goony *
-sited *
-crock
-joked
-coots *
-beady *
-fonts *
-awash *
-crook
-brags
-magus *
-redip *
-older
-loins
-showy
-newly
-nudes *
-nuder *
-quads *
-algin *
-carob *
-pulpy
-sneer
-spark
-typal *
-rinds
-cuber *
-conch
-route
-waded
-groks *
-wowee *
-gusty
-whole
-lavas
-waged
-socks
-slain
-cooed
-slots
-razor
-faddy *
-start
-stamp
-serfs
-fight
-dicot *
-paint
-leaky
-darns
-pairs
-fuzes *
-mires
-rials *
-polly *
-mussy *
-coati *
-purge
-vroom *
-purls *
-petit *
-rally
-titer *
-lemon
-wetly *
-umbra
-brack *
-polis *
-badly
-kopek *
-weave
-waist
-gimps *
-curve
-heres
-ascot *
-oaten *
-redux *
-usual
-brook -- crook
-waled -- waged
-waled -- waded
-wooed -- cooed
-liras -- rials
-crock -- crook
-nudes -- nuder
-waded -- waged
-"""
-    g = GraphParser.from_string(sample)
-    print(g)
-    print("Directed:", g.directed)
-    print("s,t:", g.s, g.t)
-    print("Red:", sorted(g.red))
-    print("Neighbors of waded:", g.neighbors("waded"))
+    # Find all .txt files in the data directory
+    data_dir = "../red-scare/data"
+    graph_files = sorted(glob.glob(f"{data_dir}/*.txt"))
+    
+    if not graph_files:
+        print(f"No .txt files found in {data_dir}")
+    else:
+        graphs = []
+        for filepath in graph_files:
+            try:
+                g = GraphParser.from_file(filepath)
+                graphs.append(g)
+                print(f"✓ Loaded: {Path(filepath).name}")
+            except (FileNotFoundError, ValueError) as e:
+                print(f"✗ Error loading {Path(filepath).name}: {e}")
+        
+        print(f"\nTotal graphs loaded: {len(graphs)}\n")
+
