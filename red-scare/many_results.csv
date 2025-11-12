@@ -1,0 +1,155 @@
+instance,n,m,r,s,t,answer,solver,time_ms,error
+G-ex,8,9,3,0,3,2,fallback,8,
+P3,3,2,1,1,3,1,tree,0,
+bht,5757,14135,7,tears,smile,error,error,131,maximum recursion depth exceeded
+common-1-100,100,8,47,start,ender,-1,unreachable,0,
+common-1-1000,1000,559,428,start,ender,-1,unreachable,0,
+common-1-1500,1500,1186,656,start,ender,-1,unreachable,0,
+common-1-20,20,0,9,start,ender,-1,unreachable,0,
+common-1-2000,2000,2019,860,start,ender,-1,unreachable,0,
+common-1-250,250,39,113,start,ender,-1,unreachable,0,
+common-1-2500,2500,3055,1067,start,ender,108,fallback,333,
+common-1-3000,3000,4315,1293,start,ender,205,fallback,363,
+common-1-3500,3500,6005,1489,start,ender,error,error,55,maximum recursion depth exceeded
+common-1-4000,4000,7768,1708,start,ender,error,error,61,maximum recursion depth exceeded while calling a Python object
+common-1-4500,4500,9887,1915,start,ender,error,error,91,maximum recursion depth exceeded
+common-1-50,50,1,22,start,ender,-1,unreachable,0,
+common-1-500,500,145,226,start,ender,-1,unreachable,0,
+common-1-5000,5000,12095,2118,start,ender,error,error,219,maximum recursion depth exceeded
+common-1-5757,5757,15945,2457,start,ender,error,error,115,maximum recursion depth exceeded while calling a Python object
+common-2-100,100,63,47,start,ender,-1,unreachable,0,
+common-2-1000,1000,5638,428,start,ender,291,fallback,601,
+common-2-1500,1500,12084,656,start,ender,error,error,97,maximum recursion depth exceeded while calling a Python object
+common-2-20,20,3,9,start,ender,-1,unreachable,0,
+common-2-2000,2000,20478,860,start,ender,error,error,135,maximum recursion depth exceeded while calling a Python object
+common-2-250,250,356,113,start,ender,-1,unreachable,0,
+common-2-2500,2500,31310,1067,start,ender,error,error,201,maximum recursion depth exceeded
+common-2-3000,3000,44606,1293,start,ender,error,error,280,maximum recursion depth exceeded
+common-2-3500,3500,61176,1489,start,ender,error,error,464,maximum recursion depth exceeded
+common-2-4000,4000,79124,1708,start,ender,error,error,561,maximum recursion depth exceeded
+common-2-4500,4500,100374,1915,start,ender,error,error,1036,maximum recursion depth exceeded while calling a Python object
+common-2-50,50,11,22,start,ender,-1,unreachable,0,
+common-2-500,500,1409,226,start,ender,96,fallback,377,
+common-2-5000,5000,123072,2118,start,ender,error,error,927,maximum recursion depth exceeded
+common-2-5757,5757,163671,2457,start,ender,error,error,1205,maximum recursion depth exceeded while calling a Python object
+dodecahedron,20,30,20,1,2,20,fallback,0,
+gnm-10-15-0,10,15,1,0,1,1,fallback,0,
+gnm-10-15-1,10,15,5,0,1,5,fallback,0,
+gnm-10-20-0,10,20,1,0,1,1,fallback,0,
+gnm-10-20-1,10,20,5,0,1,5,fallback,0,
+gnm-1000-1500-0,1000,1500,100,0,1,12,fallback,293,
+gnm-1000-1500-1,1000,1500,500,0,1,41,fallback,337,
+gnm-1000-2000-0,1000,2000,100,0,1,55,fallback,295,
+gnm-1000-2000-1,1000,2000,500,0,1,239,fallback,434,
+gnm-2000-3000-0,2000,3000,200,0,1,92,fallback,256,
+gnm-2000-3000-1,2000,3000,1000,0,1,457,fallback,284,
+gnm-2000-4000-0,2000,4000,200,0,1,error,error,25,maximum recursion depth exceeded
+gnm-2000-4000-1,2000,4000,1000,0,1,error,error,23,maximum recursion depth exceeded while calling a Python object
+gnm-3000-4500-0,3000,4500,300,0,1,error,error,31,maximum recursion depth exceeded while calling a Python object
+gnm-3000-4500-1,3000,4500,1500,0,1,error,error,31,maximum recursion depth exceeded
+gnm-3000-6000-0,3000,6000,300,0,1,error,error,33,maximum recursion depth exceeded
+gnm-3000-6000-1,3000,6000,1500,0,1,error,error,30,maximum recursion depth exceeded while calling a Python object
+gnm-4000-6000-0,4000,6000,400,0,1,error,error,49,maximum recursion depth exceeded
+gnm-4000-6000-1,4000,6000,2000,0,1,error,error,50,maximum recursion depth exceeded
+gnm-4000-8000-0,4000,8000,400,0,1,error,error,56,maximum recursion depth exceeded
+gnm-4000-8000-1,4000,8000,2000,0,1,error,error,58,maximum recursion depth exceeded while calling a Python object
+gnm-5000-10000-0,5000,10000,500,0,1,error,error,90,maximum recursion depth exceeded
+gnm-5000-10000-1,5000,10000,2500,0,1,error,error,104,maximum recursion depth exceeded while calling a Python object
+gnm-5000-7500-0,5000,7500,500,0,1,-1,unreachable,0,
+gnm-5000-7500-1,5000,7500,2500,0,1,-1,unreachable,0,
+grid-10-0,100,261,36,0_0,9_9,-1,fallback,351,
+grid-10-1,100,261,31,0_0,9_9,-1,fallback,354,
+grid-10-2,100,261,41,0_0,9_9,-1,fallback,270,
+grid-25-0,625,1776,288,0_0,24_24,-1,fallback,409,
+grid-25-1,625,1776,276,0_0,24_24,-1,fallback,358,
+grid-25-2,625,1776,300,0_0,24_24,-1,fallback,398,
+grid-5-0,25,56,8,0_0,4_4,8,fallback,0,
+grid-5-1,25,56,6,0_0,4_4,6,fallback,0,
+grid-5-2,25,56,10,0_0,4_4,10,fallback,0,
+grid-50-0,2500,7301,1176,0_0,49_49,-1,fallback,397,
+grid-50-1,2500,7301,1151,0_0,49_49,-1,fallback,429,
+grid-50-2,2500,7301,1201,0_0,49_49,-1,fallback,392,
+increase-n10-1,10,21,5,6,9,2,dag,0,
+increase-n10-2,10,29,7,5,15,3,dag,0,
+increase-n10-3,10,26,8,19,15,-1,unreachable,0,
+increase-n100-1,100,2642,53,98,72,-1,unreachable,0,
+increase-n100-2,100,2551,48,7,175,13,dag,2,
+increase-n100-3,100,2213,51,185,76,-1,unreachable,0,
+increase-n20-1,20,80,11,21,15,-1,unreachable,0,
+increase-n20-2,20,129,11,21,40,5,dag,0,
+increase-n20-3,20,99,13,10,4,-1,unreachable,0,
+increase-n50-1,50,641,21,15,6,-1,unreachable,0,
+increase-n50-2,50,537,23,32,79,5,dag,0,
+increase-n50-3,50,648,27,20,67,4,dag,3,
+increase-n500-1,500,62600,258,267,663,16,dag,74,
+increase-n500-2,500,64522,251,356,707,17,dag,62,
+increase-n500-3,500,61751,255,98,537,16,dag,63,
+increase-n8-1,8,16,6,2,5,2,dag,0,
+increase-n8-2,8,13,4,11,12,1,dag,0,
+increase-n8-3,8,20,4,8,14,1,dag,0,
+rusty-1-17,17,21,1,begin,ender,1,fallback,0,
+rusty-1-2000,2000,2001,1,begin,ender,-1,unreachable,0,
+rusty-1-2500,2500,3134,1,begin,ender,-1,unreachable,0,
+rusty-1-3000,3000,4444,1,begin,ender,-1,fallback,285,
+rusty-1-3500,3500,5974,1,begin,ender,1,fallback,64,
+rusty-1-4000,4000,7744,1,begin,ender,error,error,68,maximum recursion depth exceeded
+rusty-1-4500,4500,9900,1,begin,ender,error,error,93,maximum recursion depth exceeded
+rusty-1-5000,5000,12060,1,begin,ender,error,error,101,maximum recursion depth exceeded
+rusty-1-5757,5757,15945,1,begin,ender,error,error,127,maximum recursion depth exceeded
+rusty-2-2000,2000,20422,1,begin,ender,1,fallback,144,
+rusty-2-2500,2500,32004,1,begin,ender,1,fallback,223,
+rusty-2-3000,3000,45332,1,begin,ender,error,error,270,maximum recursion depth exceeded
+rusty-2-3500,3500,61442,1,begin,ender,error,error,382,maximum recursion depth exceeded
+rusty-2-4000,4000,79432,1,begin,ender,error,error,507,maximum recursion depth exceeded
+rusty-2-4500,4500,101086,1,begin,ender,error,error,623,maximum recursion depth exceeded
+rusty-2-5000,5000,123432,1,begin,ender,error,error,839,maximum recursion depth exceeded
+rusty-2-5757,5757,163671,1,begin,ender,error,error,1263,maximum recursion depth exceeded
+ski-illustration,36,49,1,0,36,1,dag,0,
+ski-level10-1,79,107,23,0,78,-1,unreachable,0,
+ski-level10-2,76,98,7,0,77,4,dag,0,
+ski-level10-3,77,104,29,0,77,7,dag,0,
+ski-level20-1,252,345,83,0,253,10,dag,0,
+ski-level20-2,253,337,83,0,253,14,dag,1,
+ski-level20-3,254,353,11,0,253,-1,unreachable,0,
+ski-level3-1,16,21,5,0,15,3,dag,0,
+ski-level3-2,14,18,4,0,14,1,dag,0,
+ski-level3-3,15,16,3,0,15,1,dag,0,
+ski-level5-1,29,34,8,0,28,3,dag,0,
+ski-level5-2,26,32,5,0,27,2,dag,0,
+ski-level5-3,27,30,0,0,27,0,dag,0,
+smallworld-10-0,100,241,10,0_0,9_9,9,fallback,279,
+smallworld-10-1,100,241,50,0_0,9_9,46,fallback,283,
+smallworld-20-0,400,1088,20,0_0,19_19,16,fallback,319,
+smallworld-20-1,400,1088,200,0_0,19_19,168,fallback,268,
+smallworld-3-0,9,16,3,0_0,2_2,3,fallback,0,
+smallworld-3-1,9,16,4,0_0,2_2,4,fallback,0,
+smallworld-30-0,900,2472,30,0_0,29_29,25,fallback,311,
+smallworld-30-1,900,2472,450,0_0,29_29,309,fallback,285,
+smallworld-40-0,1600,4431,40,0_0,39_39,error,error,19,maximum recursion depth exceeded
+smallworld-40-1,1600,4431,800,0_0,39_39,error,error,25,maximum recursion depth exceeded
+smallworld-50-0,2500,6930,50,0_0,49_49,error,error,35,maximum recursion depth exceeded
+smallworld-50-1,2500,6930,1250,0_0,49_49,error,error,32,maximum recursion depth exceeded while calling a Python object
+wall-n-1,8,8,1,7,0,1,fallback,0,
+wall-n-10,80,89,1,7,0,0,fallback,8,
+wall-n-100,800,899,1,7,0,0,fallback,209,
+wall-n-1000,8000,8999,1,7,0,error,error,49,maximum recursion depth exceeded
+wall-n-10000,80000,89999,1,7,0,error,error,1055,maximum recursion depth exceeded
+wall-n-2,16,17,1,7,0,0,fallback,0,
+wall-n-3,24,26,1,7,0,0,fallback,0,
+wall-n-4,32,35,1,7,0,0,fallback,0,
+wall-p-1,8,8,1,7,0,1,fallback,0,
+wall-p-10,62,71,1,7,0,1,fallback,12,
+wall-p-100,602,701,1,7,0,0,fallback,329,
+wall-p-1000,6002,7001,1,7,0,error,error,64,maximum recursion depth exceeded
+wall-p-10000,60002,70001,1,7,0,error,error,670,maximum recursion depth exceeded
+wall-p-2,14,15,1,7,0,1,fallback,0,
+wall-p-3,20,22,1,7,0,1,fallback,0,
+wall-p-4,26,29,1,7,0,1,fallback,1,
+wall-z-1,8,8,1,7,0,1,fallback,0,
+wall-z-10,71,80,1,7,0,0,fallback,6,
+wall-z-100,701,800,1,7,0,0,fallback,234,
+wall-z-1000,7001,8000,1,7,0,error,error,181,maximum recursion depth exceeded
+wall-z-10000,70001,80000,1,7,0,error,error,809,maximum recursion depth exceeded
+wall-z-2,15,16,1,7,0,0,fallback,0,
+wall-z-3,22,24,1,7,0,0,fallback,0,
+wall-z-4,29,32,1,7,0,0,fallback,1,
