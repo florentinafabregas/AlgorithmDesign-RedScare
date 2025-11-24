@@ -1,4 +1,3 @@
-from __future__ import annotations
 from collections import deque
 from parser import GraphParser
 from typing import Dict
@@ -6,6 +5,7 @@ import networkx as nx
 import csv
 from pathlib import Path
 import glob
+
 
 # Utility functions
 
@@ -60,6 +60,18 @@ def is_DAG(graph):
                 q.append(v)
     return seen == len(graph.vertices)
 
+def is_tree(graph):
+    if graph.directed:
+        return False
+
+    V = len(graph.vertices)
+    E = sum(len(graph.neighbors(u)) for u in graph.vertices) // 2
+    if E != V - 1:
+        return False
+
+    reach = reachable(graph, next(iter(graph.vertices)))
+    return all(reach.values())
+
 
 
 # Solver functions
@@ -74,64 +86,79 @@ def some_DAG(graph):
             return True
     return False
 
+# If tree >> unique path from s to t. Compute and check if red. 
 
-def some_undirected(graph):  # Using max-flow (ERRORS - dont use)
-    try:
+def some_TREE(graph):
+
+    parent = {v: None for v in graph.vertices}
+    visited = set([graph.s])
+    q = deque([graph.s])
+
+    while q:
+        u = q.popleft()
+        if u == graph.t:
+            break
+        for v in graph.neighbors(u):
+            if v not in visited:
+                visited.add(v)
+                parent[v] = u
+                q.append(v)
+
+    if parent[graph.t] is None and graph.s != graph.t:
+        return False  # no path
+
+    path = []
+    cur = graph.t
+    while cur is not None:
+        path.append(cur)
+        cur = parent[cur]
+    path.reverse()  
+
+    for v in path:
+        if v in graph.red:
+            return True
+    return False
+
+
+# Try: Solve with max flow fixing capacity of 1. FAIL
+
+def some_undirected_maxflow(graph): # Too slow
+
+    for r in graph.red:
+        # Build vertex-split graph
         G = nx.DiGraph()
-        # vertex splitting: v_in -> v_out
-        for v in graph.vertices:
-            cap = 1
-            if v == graph.s or v == graph.t:
-                cap = float('inf')
-            G.add_edge(f"{v}_in", f"{v}_out", capacity=cap)
 
-        # add edges
-        for u in graph.adj:
+        # Step 1: vertex splitting
+        for v in graph.vertices:
+            capacity = 1
+            if v == graph.s or v == graph.t:
+                capacity = float('inf')
+            elif v == r:
+                capacity = 2  # allow two paths through red
+            G.add_edge(f"{v}_in", f"{v}_out", capacity=capacity)
+
+        # Step 2: add edges (undirected -> two directed edges)
+        for u in graph.vertices:
             for v in graph.neighbors(u):
                 if u <= v:  # avoid adding twice
                     G.add_edge(f"{u}_out", f"{v}_in", capacity=float('inf'))
                     G.add_edge(f"{v}_out", f"{u}_in", capacity=float('inf'))
 
-        for r in graph.red:
-            G[f"{r}_in"][f"{r}_out"]['capacity'] = 2
-            flow_value, _ = nx.maximum_flow(G, f"{graph.s}_out", f"{graph.t}_in")
-            if flow_value >= 1:
-                return True
-            G[f"{r}_in"][f"{r}_out"]['capacity'] = 1  # reset
-        return False
+        # Step 3: compute max-flow s_out -> t_in
+        flow_value, _ = nx.maximum_flow(G, f"{graph.s}_out", f"{graph.t}_in")
 
-    except Exception:
-        return "?!"
+        # Step 4: if flow >= 2, then there exist s->r->t paths
+        if flow_value >= 2:
+            return True
+
+    return False
 
 
-def some_undirected_maxflow(graph):
-    """
-    Polynomial time check using vertex-disjoint paths.
-    
-    For each red vertex r, we check if there exist TWO vertex-disjoint paths:
-    - Path 1: from s to r
-    - Path 2: from r to t
-    
-    We do this by:
-    1. Finding a flow from s to r
-    2. Extracting vertices used
-    3. Checking if flow exists from r to t avoiding those vertices
-    """
-    import networkx as nx
-    
+
+def some_undirected_incorrect(graph):   # It fails because it looks for A path from s to r without exploring all options
+
     for red_v in graph.red:
-        # Special case
-        if red_v == graph.s or red_v == graph.t:
-            # Just check if any path exists
-            try:
-                if nx.has_path(nx.Graph([(u, v) for u in graph.vertices for v in graph.neighbors(u)]), 
-                               graph.s, graph.t):
-                    return True
-            except:
-                pass
-            continue
-        
-        # Convert to NetworkX graph for easier manipulation
+
         G_nx = nx.Graph()
         for u in graph.vertices:
             for v in graph.neighbors(u):
@@ -139,10 +166,6 @@ def some_undirected_maxflow(graph):
         
         # Try to find vertex-disjoint paths s -> red_v and red_v -> t
         try:
-            # Use NetworkX's built-in vertex disjoint paths finder
-            # But it needs node_disjoint_paths which checks s->t, not s->r->t
-            
-            # So let's check differently:
             # Find ANY path s -> red_v
             path1 = nx.shortest_path(G_nx, graph.s, red_v)
             
@@ -162,25 +185,14 @@ def some_undirected_maxflow(graph):
             continue
     
     return False
-# -----------------
+
+
 
 # General algorithm for undirected
-# STILL EXPONENTIAL .. do not use ! 
+# EXPONENTIAL .. do not use !! 
+
 def some_general(graph, budget=2000):
-    """
-    Backtracking solver for undirected (and small directed) graphs.
-    
-    Uses DFS with path tracking to find simple paths s -> red -> t.
-    
-    Complexity:
-    - Worst case: Exponential O(V!)
-    - Practice: Works well on sparse graphs, small graphs
-    - Budget limit prevents exponential blowup
-    
-    Returns:
-    - True if path through red exists
-    - False if no path found within budget
-    """
+
     # Try each red vertex as intermediate
     for red_v in graph.red:
         if _path_through_vertex_exists(graph, red_v, budget):
@@ -189,7 +201,6 @@ def some_general(graph, budget=2000):
 
 
 def _path_through_vertex_exists(graph, red_v, budget):
-    """Check if simple path s -> red_v -> t exists."""
     
     # Special case: red is s or t
     if red_v == graph.s or red_v == graph.t:
@@ -208,7 +219,6 @@ def _path_through_vertex_exists(graph, red_v, budget):
 
 
 def _has_simple_path_dfs(graph, start, target, forbidden, budget):
-    """Check if simple path exists from start to target using DFS."""
     if start == target:
         return True
     if start in forbidden:
@@ -240,19 +250,7 @@ def _has_simple_path_dfs(graph, start, target, forbidden, budget):
 
 
 def _find_simple_path_dfs(graph, start, target, forbidden, budget):
-    """
-    Find a simple path from start to target using DFS.
-    
-    Args:
-        graph: Graph object
-        start: Starting vertex
-        target: Target vertex
-        forbidden: Set of vertices that cannot be used
-        budget: Maximum nodes to explore
-    
-    Returns:
-        List of vertices representing the path, or None if no path exists
-    """
+
     if start == target:
         return [start]
     if start in forbidden:
@@ -301,6 +299,12 @@ def solve_some(graph):
     reach = reachable(graph, graph.s)
     if not reach.get(graph.t, False):
         return False, "unreachable"
+    
+    if len(graph.red) == 0:
+        return False, "no-red"  
+    
+    if graph.s in graph.red or graph.t in graph.red or set(graph.red) == set(graph.vertices):
+        return True, "trivial-red"
 
     if graph.directed:
         if is_DAG(graph):
@@ -308,17 +312,20 @@ def solve_some(graph):
             return ans, "dag"
         else:
             return "?!", "cyclic" # NP-hard for directed-cyclic
+    
+    if is_tree(graph):
+        ans = some_TREE(graph)
+        return ans, 'tree'
+    
     else:
-        # ans = some_undirected(graph)
-        # return ans, "max-flow"
 
-        ans = some_undirected_maxflow(graph)
-        return ans, "max-flow"
+        # ans = some_undirected_maxflow(graph)
+        # return ans, "max-flow"
 
         # ans = some_general(graph, budget=1000)
         # return ans, "backtrack-undirected"
 
-        #return '?!', 'undirected' # NP-hard for undirected
+        return '?!', 'undirected' # NP-hard for undirected
     
 
 
