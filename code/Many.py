@@ -3,10 +3,8 @@ import sys
 import re
 from collections import defaultdict, deque
 
-# resolve path relative to this script file
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(BASE_DIR, "data")
-
+DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "red-scare", "data"))
 
 def load_all_graphs(data_dir):
     graphs = {}
@@ -18,11 +16,6 @@ def load_all_graphs(data_dir):
             g = parse_graph_from_lines(lines)
             graphs[os.path.splitext(fname)[0]] = g
     return graphs
-
-
-# ---------------------------
-# Parsing
-# ---------------------------
 
 VERTEX_RE = re.compile(r"^([_a-z0-9]+)(\s*\*)?$")
 EDGE_DIR_RE = re.compile(r"^([_a-z0-9]+)\s*->\s*([_a-z0-9]+)$")
@@ -37,8 +30,8 @@ class Graph:
         self.t = None
         self.name_to_id = {}
         self.id_to_name = []
-        self.is_red = []        # list[bool] indexed by id
-        self.adj = defaultdict(list)  # directed adjacency (u -> list of v)
+        self.is_red = []     
+        self.adj = defaultdict(list)
 
     def add_vertex(self, name, red):
         vid = len(self.id_to_name)
@@ -55,13 +48,11 @@ class Graph:
 
 def parse_graph_from_lines(lines):
     it = iter(lines)
-    # header
     n, m, r = map(int, next(it).strip().split())
     s_name, t_name = next(it).strip().split()
     g = Graph()
     g.n, g.m, g.r = n, m, r
 
-    # vertices
     names = []
     reds = []
     for _ in range(n):
@@ -80,7 +71,6 @@ def parse_graph_from_lines(lines):
     g.s = g.name_to_id[s_name]
     g.t = g.name_to_id[t_name]
 
-    # edges: treat undirected as two arcs
     for _ in range(m):
         line = next(it).strip()
         if not line:
@@ -103,10 +93,6 @@ def parse_graph_from_lines(lines):
             raise ValueError(f"Bad edge line: {line}")
 
     return g
-
-# ---------------------------
-# Utilities
-# ---------------------------
 
 def reachable(g, src):
     q = deque([src])
@@ -155,17 +141,12 @@ def is_tree_undirected(g):
     # Count undirected edges once: |E| = half of arcs
     arc_count = sum(len(g.adj[u]) for u in g.V())
     E = arc_count // 2
-    # connected?
-    # Build an undirected reachability using arcs (they’re already symmetric)
     seen = reachable(g, g.s)
     if sum(seen) != g.n:
         return False
     return E == g.n - 1
 
-# ---------------------------
 # Exact: DAG DP (longest red-weighted s->t)
-# ---------------------------
-
 def many_dag(g):
     # Topological order with Kahn
     indeg = [0]*g.n
@@ -197,10 +178,8 @@ def many_dag(g):
 
     return -1 if dist[g.t] == NEG_INF else dist[g.t]
 
-# ---------------------------
-# Exact: Undirected tree (unique path)
-# ---------------------------
 
+# Exact: Undirected tree (unique path)
 def many_undirected_tree(g):
     # Recover the unique path with BFS parents
     parent = [-1]*g.n
@@ -210,13 +189,13 @@ def many_undirected_tree(g):
         u = q.popleft()
         if u == g.t:
             break
-        for v in g.adj[u]:  # undirected graph => symmetric arcs
+        for v in g.adj[u]:
             if parent[v] == -1:
                 parent[v] = u
                 q.append(v)
     if parent[g.t] == -1:
         return -1
-    # Walk back to s
+
     path = []
     cur = g.t
     while cur != g.s:
@@ -226,28 +205,18 @@ def many_undirected_tree(g):
     path.reverse()
     return sum(1 for v in path if g.is_red[v])
 
-# ---------------------------
+
 # General fallback: DFS with pruning
-# ---------------------------
 
 def many_general_fallback(g, node_budget=200000):
-    """
-    Exponential in worst-case, but with:
-      - basic reachability pruning,
-      - t-target pruning,
-      - a loose red upper bound (component-wise),
-      - a node expansion budget to keep runtime sane.
-    """
     if g.s == g.t:
         return 1 if g.is_red[g.s] else 0
-
-    # Precompute forward reachability to t for pruning
-    # and a very loose upper bound of red vertices remaining by component.
+    
     rev_adj = defaultdict(list)
     for u in g.V():
         for v in g.adj[u]:
             rev_adj[v].append(u)
-    can_reach_t = [False]*g.n
+    can_reach_t = [False] * g.n
     dq = deque([g.t])
     can_reach_t[g.t] = True
     while dq:
@@ -260,15 +229,19 @@ def many_general_fallback(g, node_budget=200000):
     total_red = sum(1 for v in g.V() if g.is_red[v])
 
     best = -1
-    visited = [False]*g.n
+    visited = [False] * g.n
     expansions = 0
+    budget_exhausted = False  # new flag
 
     # very loose optimistic bound: current_red + (total_red - red_seen_global)
     red_seen_global = set()
 
     def dfs(u, cur_red):
-        nonlocal best, expansions
+        nonlocal best, expansions, budget_exhausted
+        if budget_exhausted:
+            return
         if expansions >= node_budget:
+            budget_exhausted = True
             return
         expansions += 1
 
@@ -280,8 +253,7 @@ def many_general_fallback(g, node_budget=200000):
         if u == g.t:
             if cur_red > best:
                 best = cur_red
-            # continue search; there might be other better paths via different branches
-            # but don't go deeper from t
+            # don't go deeper from t
             return
 
         # optimistic bound (loose but cheap)
@@ -290,6 +262,8 @@ def many_general_fallback(g, node_budget=200000):
             return
 
         for v in g.adj[u]:
+            if budget_exhausted:
+                return
             if not visited[v]:
                 visited[v] = True
                 added = 0
@@ -301,20 +275,20 @@ def many_general_fallback(g, node_budget=200000):
                     red_seen_global.remove(v)
                 visited[v] = False
 
-    # start
     visited[g.s] = True
     start_red = 1 if g.is_red[g.s] else 0
     if g.is_red[g.s]:
         red_seen_global.add(g.s)
     dfs(g.s, start_red)
+
+    # If we ran out of budget, we *don't trust* best → mark instance unsolved
+    if budget_exhausted:
+        raise RuntimeError("node budget exhausted in many_general_fallback")
+
     return best
 
-# ---------------------------
-# Dispatcher
-# ---------------------------
 
 def solve_many(g):
-    # unreachable quick check
     reach = reachable(g, g.s)
     if not reach[g.t]:
         return -1
@@ -325,11 +299,9 @@ def solve_many(g):
     if undirected_only(g) and is_tree_undirected(g):
         return many_undirected_tree(g)
 
-    # fallback (works for any graph, with budget to avoid blow-ups)
     return many_general_fallback(g, node_budget=200000)
 
 def solve_many_with_tag(g):
-    # unreachable quick check
     reach = reachable(g, g.s)
     if not reach[g.t]:
         return -1, "unreachable"
@@ -344,9 +316,6 @@ def solve_many_with_tag(g):
     val = many_general_fallback(g, node_budget=200000)
     return val, "fallback"
 
-# ---------------------------
-# CLI
-# ---------------------------
 
 def main():
     data = sys.stdin.read().strip().splitlines()
@@ -359,9 +328,7 @@ if __name__ == "__main__":
     import csv
     import time
 
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    DATA_DIR = os.path.join(BASE_DIR, "data")
-    OUT_CSV  = os.path.join(BASE_DIR, "many_results.csv")
+    OUT_CSV = os.path.join(BASE_DIR, "many_results.csv")
 
     graphs = load_all_graphs(DATA_DIR)
     print(f"Loaded {len(graphs)} graphs from {DATA_DIR}")
@@ -400,7 +367,6 @@ if __name__ == "__main__":
             })
             print(f"{name:30s}  ERROR: {e}")
 
-    # write CSV
     fieldnames = ["instance","n","m","r","s","t","answer","solver","time_ms","error"]
     with open(OUT_CSV, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=fieldnames)
