@@ -6,9 +6,13 @@ from collections import defaultdict, deque
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "red-scare", "data"))
 
+def natural_key(name):
+    return [int(text) if text.isdigit() else text
+            for text in re.split(r'(\d+)', name)]
+
 def load_all_graphs(data_dir):
     graphs = {}
-    for fname in sorted(os.listdir(data_dir)):
+    for fname in sorted(os.listdir(data_dir), key=natural_key):
         if fname.endswith(".txt"):
             fpath = os.path.join(data_dir, fname)
             with open(fpath, "r", encoding="utf-8") as f:
@@ -328,7 +332,11 @@ if __name__ == "__main__":
     import csv
     import time
 
-    OUT_CSV = os.path.join(BASE_DIR, "many_results.csv")
+    RESULTS_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "results"))
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+
+    OUT_CSV = os.path.join(RESULTS_DIR, "many_results.csv")
+
 
     graphs = load_all_graphs(DATA_DIR)
     print(f"Loaded {len(graphs)} graphs from {DATA_DIR}")
