@@ -1,7 +1,7 @@
 file,answer,detail
-G-ex.txt,True,dfs-pruned
+G-ex.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 P3.txt,True,tree
-bht.txt,?!,dfs-pruned-budget
+bht.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 common-1-100.txt,False,unreachable
 common-1-1000.txt,False,unreachable
 common-1-1500.txt,False,unreachable
@@ -33,41 +33,41 @@ common-2-500.txt,True,trivial-red
 common-2-5000.txt,True,trivial-red
 common-2-5757.txt,True,trivial-red
 dodecahedron.txt,True,trivial-red
-gnm-10-15-0.txt,True,dfs-pruned
+gnm-10-15-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 gnm-10-15-1.txt,True,trivial-red
 gnm-10-20-0.txt,True,trivial-red
 gnm-10-20-1.txt,True,trivial-red
-gnm-1000-1500-0.txt,?!,dfs-pruned-budget
-gnm-1000-1500-1.txt,?!,dfs-pruned-budget
-gnm-1000-2000-0.txt,True,dfs-pruned
+gnm-1000-1500-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+gnm-1000-1500-1.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+gnm-1000-2000-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 gnm-1000-2000-1.txt,True,trivial-red
-gnm-2000-3000-0.txt,True,dfs-pruned
+gnm-2000-3000-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 gnm-2000-3000-1.txt,True,trivial-red
-gnm-2000-4000-0.txt,True,dfs-pruned
-gnm-2000-4000-1.txt,True,dfs-pruned
-gnm-3000-4500-0.txt,?!,dfs-pruned-budget
-gnm-3000-4500-1.txt,?!,dfs-pruned-budget
-gnm-3000-6000-0.txt,?!,dfs-pruned-budget
+gnm-2000-4000-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+gnm-2000-4000-1.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+gnm-3000-4500-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+gnm-3000-4500-1.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+gnm-3000-6000-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 gnm-3000-6000-1.txt,True,trivial-red
-gnm-4000-6000-0.txt,?!,dfs-pruned-budget
+gnm-4000-6000-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 gnm-4000-6000-1.txt,True,trivial-red
-gnm-4000-8000-0.txt,?!,dfs-pruned-budget
+gnm-4000-8000-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 gnm-4000-8000-1.txt,True,trivial-red
 gnm-5000-10000-0.txt,True,trivial-red
 gnm-5000-10000-1.txt,True,trivial-red
 gnm-5000-7500-0.txt,False,unreachable
 gnm-5000-7500-1.txt,False,unreachable
-grid-10-0.txt,True,dfs-pruned
-grid-10-1.txt,True,dfs-pruned
-grid-10-2.txt,True,dfs-pruned
-grid-25-0.txt,?!,dfs-pruned-budget
-grid-25-1.txt,?!,dfs-pruned-budget
-grid-25-2.txt,?!,dfs-pruned-budget
-grid-5-0.txt,True,dfs-pruned
-grid-5-1.txt,True,dfs-pruned
-grid-5-2.txt,True,dfs-pruned
-grid-50-0.txt,?!,dfs-pruned-budget
-grid-50-1.txt,?!,dfs-pruned-budget
+grid-10-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+grid-10-1.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+grid-10-2.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+grid-25-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+grid-25-1.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+grid-25-2.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+grid-5-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+grid-5-1.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+grid-5-2.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+grid-50-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+grid-50-1.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 grid-50-2.txt,True,trivial-red
 increase-n10-1.txt,True,trivial-red
 increase-n10-2.txt,True,trivial-red
@@ -87,23 +87,23 @@ increase-n500-3.txt,True,trivial-red
 increase-n8-1.txt,True,trivial-red
 increase-n8-2.txt,True,trivial-red
 increase-n8-3.txt,True,dag
-rusty-1-17.txt,True,dfs-pruned
+rusty-1-17.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 rusty-1-2000.txt,False,unreachable
 rusty-1-2500.txt,False,unreachable
-rusty-1-3000.txt,?!,dfs-pruned-budget
-rusty-1-3500.txt,?!,dfs-pruned-budget
-rusty-1-4000.txt,?!,dfs-pruned-budget
-rusty-1-4500.txt,?!,dfs-pruned-budget
-rusty-1-5000.txt,?!,dfs-pruned-budget
-rusty-1-5757.txt,?!,dfs-pruned-budget
-rusty-2-2000.txt,?!,dfs-pruned-budget
-rusty-2-2500.txt,?!,dfs-pruned-budget
-rusty-2-3000.txt,?!,dfs-pruned-budget
-rusty-2-3500.txt,?!,dfs-pruned-budget
-rusty-2-4000.txt,?!,dfs-pruned-budget
-rusty-2-4500.txt,?!,dfs-pruned-budget
-rusty-2-5000.txt,?!,dfs-pruned-budget
-rusty-2-5757.txt,?!,dfs-pruned-budget
+rusty-1-3000.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+rusty-1-3500.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+rusty-1-4000.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+rusty-1-4500.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+rusty-1-5000.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+rusty-1-5757.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+rusty-2-2000.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+rusty-2-2500.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+rusty-2-3000.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+rusty-2-3500.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+rusty-2-4000.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+rusty-2-4500.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+rusty-2-5000.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+rusty-2-5757.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 ski-illustration.txt,True,dag
 ski-level10-1.txt,False,unreachable
 ski-level10-2.txt,True,dag
@@ -117,39 +117,39 @@ ski-level3-3.txt,True,dag
 ski-level5-1.txt,True,dag
 ski-level5-2.txt,True,dag
 ski-level5-3.txt,False,no-red
-smallworld-10-0.txt,True,dfs-pruned
-smallworld-10-1.txt,True,dfs-pruned
-smallworld-20-0.txt,True,dfs-pruned
+smallworld-10-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+smallworld-10-1.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+smallworld-20-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 smallworld-20-1.txt,True,trivial-red
 smallworld-3-0.txt,True,trivial-red
 smallworld-3-1.txt,True,trivial-red
-smallworld-30-0.txt,?!,dfs-pruned-budget
+smallworld-30-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 smallworld-30-1.txt,True,trivial-red
-smallworld-40-0.txt,?!,dfs-pruned-budget
+smallworld-40-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 smallworld-40-1.txt,True,trivial-red
-smallworld-50-0.txt,?!,dfs-pruned-budget
+smallworld-50-0.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
 smallworld-50-1.txt,True,trivial-red
-wall-n-1.txt,True,dfs-pruned
-wall-n-10.txt,?!,dfs-pruned-budget
-wall-n-100.txt,?!,dfs-pruned-budget
-wall-n-1000.txt,?!,dfs-pruned-budget
-wall-n-10000.txt,?!,dfs-pruned-budget
-wall-n-2.txt,False,dfs-pruned
-wall-n-3.txt,False,dfs-pruned
-wall-n-4.txt,False,dfs-pruned
-wall-p-1.txt,True,dfs-pruned
-wall-p-10.txt,?!,dfs-pruned-budget
-wall-p-100.txt,?!,dfs-pruned-budget
-wall-p-1000.txt,?!,dfs-pruned-budget
-wall-p-10000.txt,?!,dfs-pruned-budget
-wall-p-2.txt,True,dfs-pruned
-wall-p-3.txt,True,dfs-pruned
-wall-p-4.txt,True,dfs-pruned
-wall-z-1.txt,True,dfs-pruned
-wall-z-10.txt,?!,dfs-pruned-budget
-wall-z-100.txt,?!,dfs-pruned-budget
-wall-z-1000.txt,?!,dfs-pruned-budget
-wall-z-10000.txt,?!,dfs-pruned-budget
-wall-z-2.txt,False,dfs-pruned
-wall-z-3.txt,False,dfs-pruned
-wall-z-4.txt,False,dfs-pruned
+wall-n-1.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-n-10.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-n-100.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-n-1000.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-n-10000.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-n-2.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-n-3.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-n-4.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-p-1.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-p-10.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-p-100.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-p-1000.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-p-10000.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-p-2.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-p-3.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-p-4.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-z-1.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-z-10.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-z-100.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-z-1000.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-z-10000.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-z-2.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-z-3.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'
+wall-z-4.txt,ERROR,module 'networkx' has no attribute 'local_node_connectivity'

@@ -6,6 +6,7 @@ import csv
 from pathlib import Path
 import glob
 
+from networkx.algorithms.connectivity import local_node_connectivity
 
 # Utility functions
 
@@ -120,6 +121,26 @@ def some_TREE(graph):
     return False
 
 
+def some_general_undirected(graph):
+    G = nx.Graph()
+    G.add_nodes_from(graph.vertices)
+    for u in graph.vertices:
+        for v in graph.neighbors(u):
+            G.add_edge(u, v)
+    
+    s, t = graph.s, graph.t
+    
+    for r in graph.red:
+
+        G_minus_r = G.copy()
+        G_minus_r.remove_node(r)
+        
+        if nx.local_node_connectivity(G_minus_r, s, t) == 0:
+            return True
+    return False
+
+
+
 # Try: Solve with max flow fixing capacity of 1. FAIL
 
 def some_undirected_maxflow(graph): # Too slow
@@ -151,39 +172,6 @@ def some_undirected_maxflow(graph): # Too slow
         if flow_value >= 2:
             return True
 
-    return False
-
-
-
-def some_undirected_incorrect(graph):   # It fails because it looks for A path from s to r without exploring all options
-
-    for red_v in graph.red:
-
-        G_nx = nx.Graph()
-        for u in graph.vertices:
-            for v in graph.neighbors(u):
-                G_nx.add_edge(u, v)
-        
-        # Try to find vertex-disjoint paths s -> red_v and red_v -> t
-        try:
-            # Find ANY path s -> red_v
-            path1 = nx.shortest_path(G_nx, graph.s, red_v)
-            
-            # Remove vertices from path1 (except red_v)
-            G_reduced = G_nx.copy()
-            for v in path1:
-                if v != red_v and v != graph.t:
-                    G_reduced.remove_node(v)
-            
-            # Check if path exists from red_v to t in reduced graph
-            if nx.has_path(G_reduced, red_v, graph.t):
-                return True
-                
-        except nx.NetworkXNoPath:
-            continue
-        except:
-            continue
-    
     return False
 
 
@@ -256,12 +244,10 @@ def _find_simple_path_dfs(graph, start, target, forbidden, budget):
     if start in forbidden:
         return None
     
-    # Create vertex index mapping for efficient visited tracking
     vertex_to_idx = {v: i for i, v in enumerate(graph.vertices)}
     visited = [False] * len(graph.vertices)
     visited[vertex_to_idx[start]] = True
     
-    # Stack: (current_vertex, path_so_far, visited_array)
     stack = [(start, [start], visited[:])]
     
     nodes_explored = 0
@@ -398,13 +384,18 @@ def solve_some(graph):
         # ans = some_general(graph, budget=1000)
         # return ans, "backtrack-undirected"
 
+        ans = some_general_undirected(graph)
+        return ans, 'undirected'
+
+
+
         # General undirected case: DFS + pruning + node budget
-        try:
-            ans = some_undirected_pruned(graph, node_budget=400)
-            return ans, "dfs-pruned"
-        except RuntimeError:
-            # If the budget is exhausted, report unknown / hard instance.
-            return "?!", "dfs-pruned-budget"
+        # try:
+        #     ans = some_undirected_pruned(graph, node_budget=400)
+        #     return ans, "dfs-pruned"
+        # except RuntimeError:
+        #     # If the budget is exhausted, report unknown / hard instance.
+        #     return "?!", "dfs-pruned-budget"
     
 
 
