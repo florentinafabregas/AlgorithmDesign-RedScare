@@ -347,7 +347,7 @@ if __name__ == "__main__":
                 "r": g.r,
                 "s": g.id_to_name[g.s],
                 "t": g.id_to_name[g.t],
-                "answer": val,
+                "M": val,
                 "solver": tag,
                 "time_ms": elapsed_ms,
             })
@@ -360,16 +360,14 @@ if __name__ == "__main__":
                 "instance": name,
                 "n": g.n, "m": g.m, "r": g.r,
                 "s": g.id_to_name[g.s], "t": g.id_to_name[g.t],
-                "answer": "?!",
+                "M": "?!",
                 "solver": "?!",
                 "time_ms": elapsed_ms,
                 "error": str(e),
             })
             print(f"{name:30s}  ERROR: {e}")
 
-    # Only keep instance, n, answer
-    fieldnames = ["instance", "n", "answer"]
-
+    fieldnames = ["instance", "n", "M"]
     OUT_CSV = os.path.join(RESULTS_DIR, "many_results.csv")
     with open(OUT_CSV, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=fieldnames)
@@ -378,15 +376,13 @@ if __name__ == "__main__":
             w.writerow({
                 "instance": row["instance"],
                 "n": row["n"],
-                "answer": row["answer"],
+                "M": row["M"],
             })
 
     print(f"\nWrote results to {OUT_CSV}")
     print(f"Solved (answer != -1): {solved}/{len(graphs)}")
 
-    # Summary of 'answer' column
-    answer_counts = Counter(row["answer"] for row in rows)
-
-    print("\nSummary of 'answer' column:")
+    answer_counts = Counter(row["M"] for row in rows)
+    print("\nSummary of 'M' column:")
     for val, cnt in answer_counts.most_common():
         print(f"  {val}: {cnt}")
