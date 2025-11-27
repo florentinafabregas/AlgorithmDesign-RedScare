@@ -121,7 +121,7 @@ def some_TREE(graph):
     return False
 
 
-def some_general_undirected(graph):
+def some_general_undirected(graph): # Does not work
     G = nx.Graph()
     G.add_nodes_from(graph.vertices)
     for u in graph.vertices:
@@ -135,21 +135,19 @@ def some_general_undirected(graph):
         G_minus_r = G.copy()
         G_minus_r.remove_node(r)
         
-        if nx.local_node_connectivity(G_minus_r, s, t) == 0:
+        if local_node_connectivity(G_minus_r, s, t) == 0:
             return True
     return False
 
 
 
-# Try: Solve with max flow fixing capacity of 1. FAIL
+# Try: Solve with max flow fixing capacity of 1. Does not work
 
 def some_undirected_maxflow(graph): # Too slow
 
     for r in graph.red:
-        # Build vertex-split graph
         G = nx.DiGraph()
 
-        # Step 1: vertex splitting
         for v in graph.vertices:
             capacity = 1
             if v == graph.s or v == graph.t:
@@ -158,17 +156,14 @@ def some_undirected_maxflow(graph): # Too slow
                 capacity = 2  # allow two paths through red
             G.add_edge(f"{v}_in", f"{v}_out", capacity=capacity)
 
-        # Step 2: add edges (undirected -> two directed edges)
         for u in graph.vertices:
             for v in graph.neighbors(u):
-                if u <= v:  # avoid adding twice
+                if u <= v:  
                     G.add_edge(f"{u}_out", f"{v}_in", capacity=float('inf'))
                     G.add_edge(f"{v}_out", f"{u}_in", capacity=float('inf'))
 
-        # Step 3: compute max-flow s_out -> t_in
         flow_value, _ = nx.maximum_flow(G, f"{graph.s}_out", f"{graph.t}_in")
 
-        # Step 4: if flow >= 2, then there exist s->r->t paths
         if flow_value >= 2:
             return True
 
@@ -178,103 +173,6 @@ def some_undirected_maxflow(graph): # Too slow
 
 # General algorithm for undirected
 # EXPONENTIAL .. do not use !! 
-
-def some_general(graph, budget=2000):
-
-    # Try each red vertex as intermediate
-    for red_v in graph.red:
-        if _path_through_vertex_exists(graph, red_v, budget):
-            return True
-    return False
-
-
-def _path_through_vertex_exists(graph, red_v, budget):
-    
-    # Special case: red is s or t
-    if red_v == graph.s or red_v == graph.t:
-        return _has_simple_path_dfs(graph, graph.s, graph.t, set(), budget)
-    
-    # Phase 1: Find simple path s -> red_v
-    path_to_red = _find_simple_path_dfs(graph, graph.s, red_v, set(), budget // 2)
-    if path_to_red is None:
-        return False
-    
-    # Phase 2: Find simple path red_v -> t, avoiding vertices from phase 1
-    used_vertices = set(path_to_red) - {red_v}
-    path_from_red = _find_simple_path_dfs(graph, red_v, graph.t, used_vertices, budget // 2)
-    
-    return path_from_red is not None
-
-
-def _has_simple_path_dfs(graph, start, target, forbidden, budget):
-    if start == target:
-        return True
-    if start in forbidden:
-        return False
-    
-    visited = [False] * len(graph.vertices)
-    vertex_to_idx = {v: i for i, v in enumerate(graph.vertices)}
-    
-    visited[vertex_to_idx[start]] = True
-    stack = [(start, visited[:], 0)]
-    
-    nodes_explored = 0
-    
-    while stack and nodes_explored < budget:
-        u, path_visited, _ = stack.pop()
-        nodes_explored += 1
-        
-        if u == target:
-            return True
-        
-        for v in graph.neighbors(u):
-            v_idx = vertex_to_idx[v]
-            if not path_visited[v_idx] and v not in forbidden:
-                new_visited = path_visited[:]
-                new_visited[v_idx] = True
-                stack.append((v, new_visited, 0))
-    
-    return False
-
-
-def _find_simple_path_dfs(graph, start, target, forbidden, budget):
-
-    if start == target:
-        return [start]
-    if start in forbidden:
-        return None
-    
-    vertex_to_idx = {v: i for i, v in enumerate(graph.vertices)}
-    visited = [False] * len(graph.vertices)
-    visited[vertex_to_idx[start]] = True
-    
-    stack = [(start, [start], visited[:])]
-    
-    nodes_explored = 0
-    
-    while stack and nodes_explored < budget:
-        u, path, path_visited = stack.pop()
-        nodes_explored += 1
-        
-        for v in graph.neighbors(u):
-            if v in forbidden:
-                continue
-            
-            v_idx = vertex_to_idx[v]
-            if path_visited[v_idx]:
-                continue
-            
-            new_path = path + [v]
-            
-            if v == target:
-                return new_path
-            
-            new_visited = path_visited[:]
-            new_visited[v_idx] = True
-            stack.append((v, new_path, new_visited))
-    
-    return None
-
 
 def _multi_source_reachable(graph, sources):
     """
@@ -370,7 +268,7 @@ def solve_some(graph):
             ans = some_DAG(graph)
             return ans, "dag"
         else:
-            return "?!", "cyclic" # NP-hard for directed-cyclic
+            return "?!", "general directed" # NP-hard for directed-cyclic
     
     if is_tree(graph):
         ans = some_TREE(graph)
@@ -378,16 +276,10 @@ def solve_some(graph):
     
     else:
 
-        # ans = some_undirected_maxflow(graph)
-        # return ans, "max-flow"
+        return '?!', "general undirected"
 
-        # ans = some_general(graph, budget=1000)
-        # return ans, "backtrack-undirected"
-
-        ans = some_general_undirected(graph)
-        return ans, 'undirected'
-
-
+        # ans = some_general_undirected(graph)
+        # return ans, 'undirected'
 
         # General undirected case: DFS + pruning + node budget
         # try:
@@ -423,5 +315,3 @@ if __name__ == "__main__":
         writer = csv.writer(f)
         writer.writerow(["file", "answer", "detail"])
         writer.writerows(results)
-
-    print(f"\nResults written to {csv_file}")
