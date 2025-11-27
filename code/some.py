@@ -6,10 +6,13 @@ import csv
 from pathlib import Path
 import glob
 
-
 # Utility functions
 
 def reachable(graph, start) -> Dict[str, bool]:
+    """
+    Performs BFS from 'start' and returns a dict with all vertices
+    that are reachable from it.
+    """
     reach = {v: False for v in graph.vertices}
     q = deque([start])
     reach[start] = True
@@ -22,9 +25,16 @@ def reachable(graph, start) -> Dict[str, bool]:
     return reach
 
 def bfs_forward(graph, start):
+    '''
+    Returns the set of vertices reachable from 'start'.
+    '''
     return {v for v, r in reachable(graph, start).items() if r}
 
 def bfs_reverse(graph, target):
+    """
+    Return the set of vertices that 'target' can reach
+    on directed edges.
+    """
     if not graph.directed:
         return bfs_forward(graph, target)
     rev_adj = {v: [] for v in graph.vertices}
@@ -43,6 +53,9 @@ def bfs_reverse(graph, target):
     return {v for v, ok in visited.items() if ok}
 
 def is_DAG(graph):
+    '''
+    Kahn's algorithm for detecting directed acyclic graphs.
+    '''
     if not graph.directed:
         return False
     indeg = {u: 0 for u in graph.vertices}
@@ -61,6 +74,13 @@ def is_DAG(graph):
     return seen == len(graph.vertices)
 
 def is_tree(graph):
+    """
+    Returns True if undirected graph is a tree.
+
+    A graph is a tree if it is undirected, it has exactly
+    V-1 edges, and if it is connected (all vertices are reachable
+    from any vertex).
+    """
     if graph.directed:
         return False
 
@@ -79,6 +99,14 @@ def is_tree(graph):
 # If DAG >> solve bfs from s and from t that end in r
 
 def some_DAG(graph):
+    '''
+    Returns True if a red vertex exists on a directed
+    path from 'start' to 'target'. 
+    
+    Computes reachability from 'start' and reversed reachability
+    from 'target', and checks for existance of red vertices
+    on both sets.
+    '''
     reach_s = reachable(graph, graph.s)
     reach_t = bfs_reverse(graph, graph.t)
     for r in graph.red:
@@ -89,7 +117,10 @@ def some_DAG(graph):
 # If tree >> unique path from s to t. Compute and check if red. 
 
 def some_TREE(graph):
-
+    '''
+    Returns True if the unique s-t path contains a red vertex.
+    Uses BFS to find the unique s-t path, and scan for red vertices.
+    '''
     parent = {v: None for v in graph.vertices}
     visited = set([graph.s])
     q = deque([graph.s])
@@ -120,175 +151,8 @@ def some_TREE(graph):
     return False
 
 
-# Try: Solve with max flow fixing capacity of 1. FAIL
-
-def some_undirected_maxflow(graph): # Too slow
-
-    for r in graph.red:
-        # Build vertex-split graph
-        G = nx.DiGraph()
-
-        # Step 1: vertex splitting
-        for v in graph.vertices:
-            capacity = 1
-            if v == graph.s or v == graph.t:
-                capacity = float('inf')
-            elif v == r:
-                capacity = 2  # allow two paths through red
-            G.add_edge(f"{v}_in", f"{v}_out", capacity=capacity)
-
-        # Step 2: add edges (undirected -> two directed edges)
-        for u in graph.vertices:
-            for v in graph.neighbors(u):
-                if u <= v:  # avoid adding twice
-                    G.add_edge(f"{u}_out", f"{v}_in", capacity=float('inf'))
-                    G.add_edge(f"{v}_out", f"{u}_in", capacity=float('inf'))
-
-        # Step 3: compute max-flow s_out -> t_in
-        flow_value, _ = nx.maximum_flow(G, f"{graph.s}_out", f"{graph.t}_in")
-
-        # Step 4: if flow >= 2, then there exist s->r->t paths
-        if flow_value >= 2:
-            return True
-
-    return False
-
-
-
-def some_undirected_incorrect(graph):   # It fails because it looks for A path from s to r without exploring all options
-
-    for red_v in graph.red:
-
-        G_nx = nx.Graph()
-        for u in graph.vertices:
-            for v in graph.neighbors(u):
-                G_nx.add_edge(u, v)
-        
-        # Try to find vertex-disjoint paths s -> red_v and red_v -> t
-        try:
-            # Find ANY path s -> red_v
-            path1 = nx.shortest_path(G_nx, graph.s, red_v)
-            
-            # Remove vertices from path1 (except red_v)
-            G_reduced = G_nx.copy()
-            for v in path1:
-                if v != red_v and v != graph.t:
-                    G_reduced.remove_node(v)
-            
-            # Check if path exists from red_v to t in reduced graph
-            if nx.has_path(G_reduced, red_v, graph.t):
-                return True
-                
-        except nx.NetworkXNoPath:
-            continue
-        except:
-            continue
-    
-    return False
-
-
-
 # General algorithm for undirected
-# EXPONENTIAL .. do not use !! 
-
-def some_general(graph, budget=2000):
-
-    # Try each red vertex as intermediate
-    for red_v in graph.red:
-        if _path_through_vertex_exists(graph, red_v, budget):
-            return True
-    return False
-
-
-def _path_through_vertex_exists(graph, red_v, budget):
-    
-    # Special case: red is s or t
-    if red_v == graph.s or red_v == graph.t:
-        return _has_simple_path_dfs(graph, graph.s, graph.t, set(), budget)
-    
-    # Phase 1: Find simple path s -> red_v
-    path_to_red = _find_simple_path_dfs(graph, graph.s, red_v, set(), budget // 2)
-    if path_to_red is None:
-        return False
-    
-    # Phase 2: Find simple path red_v -> t, avoiding vertices from phase 1
-    used_vertices = set(path_to_red) - {red_v}
-    path_from_red = _find_simple_path_dfs(graph, red_v, graph.t, used_vertices, budget // 2)
-    
-    return path_from_red is not None
-
-
-def _has_simple_path_dfs(graph, start, target, forbidden, budget):
-    if start == target:
-        return True
-    if start in forbidden:
-        return False
-    
-    visited = [False] * len(graph.vertices)
-    vertex_to_idx = {v: i for i, v in enumerate(graph.vertices)}
-    
-    visited[vertex_to_idx[start]] = True
-    stack = [(start, visited[:], 0)]
-    
-    nodes_explored = 0
-    
-    while stack and nodes_explored < budget:
-        u, path_visited, _ = stack.pop()
-        nodes_explored += 1
-        
-        if u == target:
-            return True
-        
-        for v in graph.neighbors(u):
-            v_idx = vertex_to_idx[v]
-            if not path_visited[v_idx] and v not in forbidden:
-                new_visited = path_visited[:]
-                new_visited[v_idx] = True
-                stack.append((v, new_visited, 0))
-    
-    return False
-
-
-def _find_simple_path_dfs(graph, start, target, forbidden, budget):
-
-    if start == target:
-        return [start]
-    if start in forbidden:
-        return None
-    
-    # Create vertex index mapping for efficient visited tracking
-    vertex_to_idx = {v: i for i, v in enumerate(graph.vertices)}
-    visited = [False] * len(graph.vertices)
-    visited[vertex_to_idx[start]] = True
-    
-    # Stack: (current_vertex, path_so_far, visited_array)
-    stack = [(start, [start], visited[:])]
-    
-    nodes_explored = 0
-    
-    while stack and nodes_explored < budget:
-        u, path, path_visited = stack.pop()
-        nodes_explored += 1
-        
-        for v in graph.neighbors(u):
-            if v in forbidden:
-                continue
-            
-            v_idx = vertex_to_idx[v]
-            if path_visited[v_idx]:
-                continue
-            
-            new_path = path + [v]
-            
-            if v == target:
-                return new_path
-            
-            new_visited = path_visited[:]
-            new_visited[v_idx] = True
-            stack.append((v, new_path, new_visited))
-    
-    return None
-
+# EXPONENTIAL .. do not use
 
 def _multi_source_reachable(graph, sources):
     """
@@ -384,7 +248,7 @@ def solve_some(graph):
             ans = some_DAG(graph)
             return ans, "dag"
         else:
-            return "?!", "cyclic" # NP-hard for directed-cyclic
+            return "?!", "general directed" # NP-hard for directed-cyclic
     
     if is_tree(graph):
         ans = some_TREE(graph)
@@ -392,19 +256,15 @@ def solve_some(graph):
     
     else:
 
-        # ans = some_undirected_maxflow(graph)
-        # return ans, "max-flow"
-
-        # ans = some_general(graph, budget=1000)
-        # return ans, "backtrack-undirected"
+        return '?!', "general undirected"
 
         # General undirected case: DFS + pruning + node budget
-        try:
-            ans = some_undirected_pruned(graph, node_budget=400)
-            return ans, "dfs-pruned"
-        except RuntimeError:
-            # If the budget is exhausted, report unknown / hard instance.
-            return "?!", "dfs-pruned-budget"
+        # try:
+        #     ans = some_undirected_pruned(graph, node_budget=400)
+        #     return ans, "dfs-pruned"
+        # except RuntimeError:
+        #     # If the budget is exhausted, report unknown / hard instance.
+        #     return "?!", "dfs-pruned-budget"
     
 
 
@@ -432,5 +292,3 @@ if __name__ == "__main__":
         writer = csv.writer(f)
         writer.writerow(["file", "answer", "detail"])
         writer.writerows(results)
-
-    print(f"\nResults written to {csv_file}")
