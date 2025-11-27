@@ -1,7 +1,7 @@
 import os
 import sys
 import re
-from collections import defaultdict, deque
+from collections import defaultdict, deque, Counter
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "red-scare", "data"))
@@ -129,7 +129,6 @@ def is_dag(g):
 
 def undirected_only(g):
     # If every arc has its reverse, we consider it undirected-only.
-    # Build a set for quick lookup.
     S = set()
     for u in g.V():
         for v in g.adj[u]:
@@ -253,11 +252,9 @@ def many_general_fallback(g, node_budget=50000):
         if not can_reach_t[u]:
             return
 
-        # update best if at t
         if u == g.t:
             if cur_red > best:
                 best = cur_red
-            # don't go deeper from t
             return
 
         # optimistic bound (loose but cheap)
@@ -285,7 +282,7 @@ def many_general_fallback(g, node_budget=50000):
         red_seen_global.add(g.s)
     dfs(g.s, start_red)
 
-    # If we ran out of budget, we *don't trust* best → mark instance unsolved
+    # If we ran out of budget - mark instance unsolved
     if budget_exhausted:
         raise RuntimeError("node budget exhausted in many_general_fallback")
 
@@ -337,7 +334,6 @@ if __name__ == "__main__":
 
     OUT_CSV = os.path.join(RESULTS_DIR, "many_results.csv")
 
-
     graphs = load_all_graphs(DATA_DIR)
     print(f"Loaded {len(graphs)} graphs from {DATA_DIR}")
 
@@ -388,8 +384,6 @@ if __name__ == "__main__":
     print(f"Solved (answer != -1): {solved}/{len(graphs)}")
 
     # Summary of 'answer' column
-    from collections import Counter
-
     answer_counts = Counter(row["answer"] for row in rows)
 
     print("\nSummary of 'answer' column:")
