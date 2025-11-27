@@ -290,6 +290,79 @@ def _find_simple_path_dfs(graph, start, target, forbidden, budget):
     return None
 
 
+def _multi_source_reachable(graph, sources):
+    """
+    For an undirected graph: return dict v -> True/False saying
+    whether v can reach at least one vertex in 'sources'.
+    """
+    reach = {v: False for v in sorted(graph.vertices)}
+    q = deque()
+
+    for s in sources:
+        if s in reach and not reach[s]:
+            reach[s] = True
+            q.append(s)
+
+    while q:
+        u = q.popleft()
+        for v in sorted(graph.neighbors(u)):
+            if not reach[v]:
+                reach[v] = True
+                q.append(v)
+
+    return reach
+
+
+def some_undirected_pruned(graph, node_budget=400):
+    """
+    DFS over simple s-t paths with pruning:
+      - prune vertices that cannot reach t (can_reach_t[v] == False)
+      - if we haven't seen a red yet, prune vertices that cannot reach any red vertex
+        (can_reach_red[v] == False)
+      - stop immediately when we find an s-t path with at least one red vertex
+      - abort if node_budget is exceeded (raise RuntimeError)
+    """
+    # Precompute pruning information (undirected, so plain BFS is enough)
+    can_reach_t = _multi_source_reachable(graph, [graph.t])
+    can_reach_red = _multi_source_reachable(graph, list(graph.red))
+
+    visited = {v: False for v in sorted(graph.vertices)}
+    expansions = 0
+    found = False
+
+    def dfs(v, got_red):
+        nonlocal expansions, found
+
+        if found:
+            return
+
+        if expansions >= node_budget:
+            raise RuntimeError("node budget exhausted in some_undirected_pruned")
+        expansions += 1
+
+        # Prune if t is unreachable from here (even ignoring visited)
+        if not can_reach_t[v]:
+            return
+
+        if not got_red and not can_reach_red[v]:
+            return
+
+        # Success condition - reached t having seen at least one red
+        if v == graph.t and got_red:
+            found = True
+            return
+
+        for u in sorted(graph.neighbors(v)):
+            if not visited[u]:
+                visited[u] = True
+                dfs(u, got_red or (u in graph.red))
+                visited[u] = False
+                if found:
+                    return
+
+    visited[graph.s] = True
+    dfs(graph.s, graph.s in graph.red)
+    return found
 
 
 
@@ -325,7 +398,13 @@ def solve_some(graph):
         # ans = some_general(graph, budget=1000)
         # return ans, "backtrack-undirected"
 
-        return '?!', 'undirected' # NP-hard for undirected
+        # General undirected case: DFS + pruning + node budget
+        try:
+            ans = some_undirected_pruned(graph, node_budget=400)
+            return ans, "dfs-pruned"
+        except RuntimeError:
+            # If the budget is exhausted, report unknown / hard instance.
+            return "?!", "dfs-pruned-budget"
     
 
 
