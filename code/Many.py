@@ -212,7 +212,7 @@ def many_undirected_tree(g):
 
 # General fallback: DFS with pruning
 
-def many_general_fallback(g, node_budget=200000):
+def many_general_fallback(g, node_budget=50000):
     if g.s == g.t:
         return 1 if g.is_red[g.s] else 0
     
@@ -303,7 +303,7 @@ def solve_many(g):
     if undirected_only(g) and is_tree_undirected(g):
         return many_undirected_tree(g)
 
-    return many_general_fallback(g, node_budget=200000)
+    return many_general_fallback(g, node_budget=50000)
 
 def solve_many_with_tag(g):
     reach = reachable(g, g.s)
@@ -317,7 +317,7 @@ def solve_many_with_tag(g):
         return many_undirected_tree(g), "tree"
 
     # fallback
-    val = many_general_fallback(g, node_budget=200000)
+    val = many_general_fallback(g, node_budget=50000)
     return val, "fallback"
 
 
@@ -368,8 +368,8 @@ if __name__ == "__main__":
                 "instance": name,
                 "n": g.n, "m": g.m, "r": g.r,
                 "s": g.id_to_name[g.s], "t": g.id_to_name[g.t],
-                "answer": "error",
-                "solver": "error",
+                "answer": "?!",
+                "solver": "?!",
                 "time_ms": elapsed_ms,
                 "error": str(e),
             })
@@ -386,3 +386,12 @@ if __name__ == "__main__":
 
     print(f"\nWrote results to {OUT_CSV}")
     print(f"Solved (answer != -1): {solved}/{len(graphs)}")
+
+    # Summary of 'answer' column
+    from collections import Counter
+
+    answer_counts = Counter(row["answer"] for row in rows)
+
+    print("\nSummary of 'answer' column:")
+    for val, cnt in answer_counts.most_common():
+        print(f"  {val}: {cnt}")
