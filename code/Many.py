@@ -6,13 +6,9 @@ from collections import defaultdict, deque, Counter
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "red-scare", "data"))
 
-def natural_key(name):
-    return [int(text) if text.isdigit() else text
-            for text in re.split(r'(\d+)', name)]
-
 def load_all_graphs(data_dir):
     graphs = {}
-    for fname in sorted(os.listdir(data_dir), key=natural_key):
+    for fname in sorted(os.listdir(data_dir)):
         if fname.endswith(".txt"):
             fpath = os.path.join(data_dir, fname)
             with open(fpath, "r", encoding="utf-8") as f:
@@ -371,14 +367,19 @@ if __name__ == "__main__":
             })
             print(f"{name:30s}  ERROR: {e}")
 
-    fieldnames = ["instance","n","m","r","s","t","answer","solver","time_ms","error"]
+    # Only keep instance, n, answer
+    fieldnames = ["instance", "n", "answer"]
+
+    OUT_CSV = os.path.join(RESULTS_DIR, "many_results.csv")
     with open(OUT_CSV, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=fieldnames)
         w.writeheader()
         for row in rows:
-            if "error" not in row:
-                row["error"] = ""
-            w.writerow(row)
+            w.writerow({
+                "instance": row["instance"],
+                "n": row["n"],
+                "answer": row["answer"],
+            })
 
     print(f"\nWrote results to {OUT_CSV}")
     print(f"Solved (answer != -1): {solved}/{len(graphs)}")
