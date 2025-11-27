@@ -6,11 +6,13 @@ import csv
 from pathlib import Path
 import glob
 
-from networkx.algorithms.connectivity import local_node_connectivity
-
 # Utility functions
 
 def reachable(graph, start) -> Dict[str, bool]:
+    """
+    Performs BFS from 'start' and returns a dict with all vertices
+    that are reachable from it.
+    """
     reach = {v: False for v in graph.vertices}
     q = deque([start])
     reach[start] = True
@@ -23,9 +25,16 @@ def reachable(graph, start) -> Dict[str, bool]:
     return reach
 
 def bfs_forward(graph, start):
+    '''
+    Returns the set of vertices reachable from 'start'.
+    '''
     return {v for v, r in reachable(graph, start).items() if r}
 
 def bfs_reverse(graph, target):
+    """
+    Return the set of vertices that 'target' can reach
+    on directed edges.
+    """
     if not graph.directed:
         return bfs_forward(graph, target)
     rev_adj = {v: [] for v in graph.vertices}
@@ -44,6 +53,9 @@ def bfs_reverse(graph, target):
     return {v for v, ok in visited.items() if ok}
 
 def is_DAG(graph):
+    '''
+    Kahn's algorithm for detecting directed acyclic graphs.
+    '''
     if not graph.directed:
         return False
     indeg = {u: 0 for u in graph.vertices}
@@ -62,6 +74,13 @@ def is_DAG(graph):
     return seen == len(graph.vertices)
 
 def is_tree(graph):
+    """
+    Returns True if undirected graph is a tree.
+
+    A graph is a tree if it is undirected, it has exactly
+    V-1 edges, and if it is connected (all vertices are reachable
+    from any vertex).
+    """
     if graph.directed:
         return False
 
@@ -80,6 +99,14 @@ def is_tree(graph):
 # If DAG >> solve bfs from s and from t that end in r
 
 def some_DAG(graph):
+    '''
+    Returns True if a red vertex exists on a directed
+    path from 'start' to 'target'. 
+    
+    Computes reachability from 'start' and reversed reachability
+    from 'target', and checks for existance of red vertices
+    on both sets.
+    '''
     reach_s = reachable(graph, graph.s)
     reach_t = bfs_reverse(graph, graph.t)
     for r in graph.red:
@@ -90,7 +117,10 @@ def some_DAG(graph):
 # If tree >> unique path from s to t. Compute and check if red. 
 
 def some_TREE(graph):
-
+    '''
+    Returns True if the unique s-t path contains a red vertex.
+    Uses BFS to find the unique s-t path, and scan for red vertices.
+    '''
     parent = {v: None for v in graph.vertices}
     visited = set([graph.s])
     q = deque([graph.s])
@@ -121,58 +151,8 @@ def some_TREE(graph):
     return False
 
 
-def some_general_undirected(graph): # Does not work
-    G = nx.Graph()
-    G.add_nodes_from(graph.vertices)
-    for u in graph.vertices:
-        for v in graph.neighbors(u):
-            G.add_edge(u, v)
-    
-    s, t = graph.s, graph.t
-    
-    for r in graph.red:
-
-        G_minus_r = G.copy()
-        G_minus_r.remove_node(r)
-        
-        if local_node_connectivity(G_minus_r, s, t) == 0:
-            return True
-    return False
-
-
-
-# Try: Solve with max flow fixing capacity of 1. Does not work
-
-def some_undirected_maxflow(graph): # Too slow
-
-    for r in graph.red:
-        G = nx.DiGraph()
-
-        for v in graph.vertices:
-            capacity = 1
-            if v == graph.s or v == graph.t:
-                capacity = float('inf')
-            elif v == r:
-                capacity = 2  # allow two paths through red
-            G.add_edge(f"{v}_in", f"{v}_out", capacity=capacity)
-
-        for u in graph.vertices:
-            for v in graph.neighbors(u):
-                if u <= v:  
-                    G.add_edge(f"{u}_out", f"{v}_in", capacity=float('inf'))
-                    G.add_edge(f"{v}_out", f"{u}_in", capacity=float('inf'))
-
-        flow_value, _ = nx.maximum_flow(G, f"{graph.s}_out", f"{graph.t}_in")
-
-        if flow_value >= 2:
-            return True
-
-    return False
-
-
-
 # General algorithm for undirected
-# EXPONENTIAL .. do not use !! 
+# EXPONENTIAL .. do not use
 
 def _multi_source_reachable(graph, sources):
     """
@@ -277,9 +257,6 @@ def solve_some(graph):
     else:
 
         return '?!', "general undirected"
-
-        # ans = some_general_undirected(graph)
-        # return ans, 'undirected'
 
         # General undirected case: DFS + pruning + node budget
         # try:
